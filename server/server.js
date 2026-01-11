@@ -1,72 +1,38 @@
-import express from "express";
-import { Server } from "socket.io";
-import http from "http";
-import cors from "cors";
-import dotenv from "dotenv";
-import cookieParser from "cookie-parser";
-dotenv.config();
-import router from "./router/router.js";
-import { buildConnection } from "./db/dbconnection.js";
-import { addRoomUsers } from "./controllers/roomcontroller.js";
-
+import express from "express"
+import http from "http"
+import {Server} from "socket.io"
 const app = express();
 const server = http.createServer(app);
 
-app.use(
-  cors({
-    origin: 'http://localhost:5173', // your frontend origin
-    credentials: true,               // this is crucial
-  })
-);
-app.use(cookieParser());
+const io = new Server(server,{cors:{
+    origin:"http://localhost:5173"
+}})
 
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
-server.listen(process.env.PORT, () => {
-  console.log(`Server is running on port 3021`);
-});
+const PORT = 9878;
+let messages = {}
+io.on("connection",(socket)=>{
+    console.log(socket.id+" got connected");
+    // let already in users to know the new joined user
+    socket.on("new-user",(user)=>{
+        console.log(user.username+" Joined the chat");
+       socket.broadcast.emit("new-user-joined",user);
+    })
 
-const io = new Server(server, {
-  cors: {
-    origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE"],
-  },
-});
-app.use((req, res, next) => {
-  req.io = io;
-  next();
-});
+    // exit user
+    socket.on("exit-user",(user)=>{
+        socket.disconnect();
+        console.log(user.username+ " left the chat at"+user.time);
+        socket.broadcast.emit("left-users",user);
+    })
+    // send the message to all
+    socket.on("send-message",(msg)=>{
+        console.log(msg);
+        console.log(msg.message);
+        console.log(msg.sender);
+       io.emit("sent-message",msg);
+    })
+})
 
-const data = {};
-await buildConnection(process.env.MONGO_URL)
-  .then(() => console.log("Database connected"))
-  .catch((error) => console.log(error + "Database not connected"));
-
-// socket connections and operations
-io.on("connection", (socket) => {
-  console.log(`Client with id ${socket.id} connected`);
-  socket.on("create-room", (userData) => {
-    const userName = userData.username;
-    const roomname = userData.room;
-    if (!data[roomname]) {
-      data[roomname] = [];
-    }
-    data[roomname].push(userData);
-    socket.join(roomname);
-    if(roomname) addRoomUsers(userName, roomname, "room-creator"); //adding them to database
-    console.log(socket + "Room creator joined the room ", roomname);
-    io.to(roomname).emit("room-creator-data", userData);
-  });
-  socket.on("join-room", (userData) => {
-    const userName = userData.username;
-    const roomname = userData.room;
-    socket.join(roomname);
-    console.log("Another user joined the room ", roomname);
-    addRoomUsers(userName, roomname, "room-user");
-    io.to(roomname).emit("room-joiner-data", userData);
-  });
-  if (data) {
-    socket.emit("users-data", data);
-  }
-});
-app.use("/app", router);
+server.listen(PORT,()=>{
+    console.log(`Server running on Port ${PORT}`);
+})

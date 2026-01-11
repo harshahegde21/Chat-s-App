@@ -10,10 +10,10 @@ const App = () => {
   return (
     <UserProvider>
         <Routes>
-          <Route path="/" element={<LandingPage/>} />
+          {/* <Route path="/" element={<LandingPage/>} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Loginpage />} />
-          <Route path="/home" element={<Homepage />} />
+          <Route path="/login" element={<Loginpage />} /> */}
+          <Route path="/" element={<Homepage />} />
           <Route path="/chatroom" element={<Chatroom/>}/>
         </Routes>
      </UserProvider>
