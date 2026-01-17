@@ -9,7 +9,7 @@ const io = new Server(server,{cors:{
     origin:"http://localhost:5173"
 }})
 
-const PORT = 9878;
+const PORT = process.env.PORT || 9878;
 let messages = {}
 io.on("connection",(socket)=>{
     console.log(socket.id+" got connected");
