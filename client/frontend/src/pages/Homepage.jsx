@@ -1,31 +1,3 @@
-// import React from "react";
-// import { useState,useRef } from "react";
-// import {useNavigate} from "react-router-dom"
-// import { UserContext } from "../context/UserProvider";
-// import { useContext } from "react";
-// const Homepage = ()=>{
-//   // const [username,setuserName] = useState("");
-//   const {setuserName,username} = useContext(UserContext)
-//   const navigate = useNavigate();
-//   const handleInput = (e)=>{
-//     setuserName(e.target.value+" ");
-//     localStorage.setItem("username",username);
-//   }
-
-//   const handleJoin = ()=>{
-//     navigate("/chatroom");
-//   }
-  
-//   return<>
-  
-//   <div>
-//     <input type="text" id="username" placeholder="Enter username to join" onChange={handleInput} />
-//     <button onClick={handleJoin}>Join</button>
-//   </div>
-//   </>
-// }
-// export default Homepage;
-
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserProvider";
