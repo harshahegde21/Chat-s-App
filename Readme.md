@@ -40,3 +40,15 @@
 ```bash
 git clone https://github.com/harshahegde21/Chat-s-App.git
 cd Chat-s-App
+
+cd client
+cd frontend
+npm install socket.io-client
+npm install
+
+cd server
+npm install
+npm install socket.io
+npm start
+
+
