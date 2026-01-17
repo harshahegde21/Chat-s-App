@@ -8,7 +8,7 @@ dotenv.config();
 
 const allowedOrigins = [
   "http://localhost:5173",
-  "https://chat-s-app.vercel.app"
+  ""
 ];
 
 const io = new Server(server, {
