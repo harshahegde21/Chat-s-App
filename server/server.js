@@ -5,9 +5,26 @@ const app = express();
 const server = http.createServer(app);
 import dotenv from 'dotenv'
 dotenv.config();
-const io = new Server(server,{cors:{
-    origin:"http://localhost:5173"
-}})
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://chat-s-app.vercel.app"
+];
+
+const io = new Server(server, {
+  cors: {
+    origin: (origin, callback) => {
+      if (!origin) return callback(null, true); // allow Postman or mobile clients
+      if (allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
+    credentials: true
+  }
+});
+
 
 const PORT = process.env.PORT || 9878;
 let messages = {}
